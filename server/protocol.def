@@ -4030,6 +4030,11 @@ enum esync_type
     unsigned int shm_idx;
 @END
 
+@REQ(speedhack_set_speed)
+    unsigned int multiplier;
+@REPLY
+@END
+
 @REQ(open_esync)
     unsigned int access;        /* wanted access rights */
     unsigned int attributes;    /* object attributes */

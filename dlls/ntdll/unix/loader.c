@@ -1196,6 +1196,7 @@ static const unixlib_entry_t unix_call_funcs[] =
     unixcall_wine_server_call,
     unixcall_wine_server_fd_to_handle,
     unixcall_wine_server_handle_to_fd,
+    unixcall_wine_update_speedhack_multiplier,
     unixcall_wine_spawnvp,
     system_time_precise,
     steamclient_setup_trampolines,

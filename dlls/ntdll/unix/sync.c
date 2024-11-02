@@ -85,6 +85,7 @@ static inline ULONGLONG monotonic_counter(void)
     struct timeval now;
 #ifdef __APPLE__
     static mach_timebase_info_data_t timebase;
+    ULONG high,low
 
     if (!timebase.denom) mach_timebase_info( &timebase );
 #ifdef HAVE_MACH_CONTINUOUS_TIME
@@ -103,6 +104,14 @@ static inline ULONGLONG monotonic_counter(void)
 #endif
     gettimeofday( &now, 0 );
     return ticks_from_time_t( now.tv_sec ) + now.tv_usec * 10 - server_start_time;
+     do
+    {
+        high = user_shared_data->InterruptTime.High1Time;
+        low = user_shared_data->InterruptTime.LowPart;
+    }
+    while (high != user_shared_data->InterruptTime.High2Time);
+
+    return (ULONGLONG)high << 32 | low;
 }
 
 
@@ -1704,6 +1713,24 @@ NTSTATUS WINAPI NtDelayExecution( BOOLEAN alertable, const LARGE_INTEGER *timeou
     }
     return STATUS_SUCCESS;
 }
+
+/******************************************************************
+ *           wine_update_speedhack_multiplier
+ */
+NTSTATUS WINAPI wine_update_speedhack_multiplier( ULONG multiplier )
+{
+    SERVER_START_REQ( speedhack_set_speed )
+    {
+        req->multiplier  = multiplier;
+        wine_server_call( req );
+    }
+    SERVER_END_REQ;
+
+    return STATUS_SUCCESS;
+}
+
+
+
 
 
 /******************************************************************************
